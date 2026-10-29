@@ -3,41 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#4f46e5">
-  <meta name="description" content="NoteFlow - Modern Hybrid Note-Taking Application">
-  <title>NoteFlow - Smart Hybrid Notes</title>
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Simple personal notes application">
+  <title>Notes</title>
   
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-theme="light">
   <div class="app-container">
-    <!-- Top App Bar -->
+    <!-- Top Bar -->
     <header class="app-header">
       <div class="header-main">
         <div class="brand">
-          <div class="brand-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/>
-              <path d="M15 3v6h6"/>
-              <path d="M10 18l4-4"/>
-              <path d="M10 14l4 4"/>
-            </svg>
-          </div>
-          <div>
-            <h1 class="brand-title">NoteFlow</h1>
-            <p class="brand-subtitle">Hybrid Mobile Notes</p>
-          </div>
+          <h1 class="brand-title">Notes</h1>
         </div>
 
         <div class="header-actions">
           <!-- Theme Toggle -->
-          <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle dark mode" title="Toggle Theme">
-            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+            <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -48,7 +36,7 @@
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
-            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
@@ -57,13 +45,13 @@
 
       <!-- Search Bar -->
       <div class="search-box">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" id="searchInput" placeholder="Search notes by title or content..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Search notes..." autocomplete="off">
         <button id="clearSearchBtn" class="clear-search hidden" aria-label="Clear search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -84,44 +72,41 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      <!-- Status & Stats Bar -->
       <div class="stats-bar">
-        <span id="notesCountText" class="notes-count">Loading notes...</span>
-        <div class="view-options">
-          <span class="badge-hybrid">Hybrid Web & Android</span>
-        </div>
+        <span id="notesCountText" class="notes-count">1 note</span>
       </div>
 
-      <!-- Notes Container -->
+      <!-- Notes Grid -->
       <div id="notesContainer" class="notes-grid">
-        <!-- Notes will be dynamically injected here -->
+        <!-- Notes are rendered dynamically here -->
       </div>
 
       <!-- Empty State -->
       <div id="emptyState" class="empty-state hidden">
         <div class="empty-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="12" y1="18" x2="12" y2="12"></line>
-            <line x1="9" y1="15" x2="15" y2="15"></line>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
         </div>
-        <h3 id="emptyTitle">No notes yet</h3>
-        <p id="emptySubtitle">Tap the + button below to create your very first note.</p>
+        <h3 id="emptyTitle">No notes</h3>
+        <p id="emptySubtitle">Tap the button below to add your first note.</p>
         <button id="emptyAddBtn" class="btn btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          Create Note
+          New Note
         </button>
       </div>
     </main>
 
-    <!-- Floating Action Button (FAB) -->
-    <button id="addNoteFab" class="fab" aria-label="Create note" title="Create note">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Floating Action Button -->
+    <button id="addNoteFab" class="fab" aria-label="Add note" title="Add note">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
@@ -132,9 +117,9 @@
   <div id="noteModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 id="modalTitle">Create Note</h2>
+        <h2 id="modalTitle">New Note</h2>
         <button id="closeModalBtn" class="icon-btn-sm" aria-label="Close modal">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -144,13 +129,13 @@
       <form id="noteForm" class="modal-form">
         <input type="hidden" id="noteId">
 
-        <!-- Title Field -->
+        <!-- Title -->
         <div class="form-group">
           <label for="noteTitleInput">Title</label>
-          <input type="text" id="noteTitleInput" placeholder="Note heading..." required maxlength="100">
+          <input type="text" id="noteTitleInput" placeholder="Title" required maxlength="100">
         </div>
 
-        <!-- Category & Color Selectors -->
+        <!-- Category & Tag Tone -->
         <div class="form-row">
           <div class="form-group flex-1">
             <label for="noteCategorySelect">Category</label>
@@ -163,57 +148,57 @@
           </div>
 
           <div class="form-group flex-1">
-            <label>Card Color</label>
+            <label>Tag tone</label>
             <div class="color-picker" id="colorPicker">
-              <button type="button" class="color-dot active" data-color="indigo" style="background-color: #6366f1;" title="Indigo"></button>
-              <button type="button" class="color-dot" data-color="emerald" style="background-color: #10b981;" title="Emerald"></button>
-              <button type="button" class="color-dot" data-color="amber" style="background-color: #f59e0b;" title="Amber"></button>
-              <button type="button" class="color-dot" data-color="rose" style="background-color: #f43f5e;" title="Rose"></button>
-              <button type="button" class="color-dot" data-color="cyan" style="background-color: #06b6d4;" title="Cyan"></button>
+              <button type="button" class="color-dot active" data-color="slate" style="background-color: #64748b;" title="Slate"></button>
+              <button type="button" class="color-dot" data-color="blue" style="background-color: #2563eb;" title="Blue"></button>
+              <button type="button" class="color-dot" data-color="teal" style="background-color: #0d9488;" title="Teal"></button>
+              <button type="button" class="color-dot" data-color="amber" style="background-color: #d97706;" title="Amber"></button>
+              <button type="button" class="color-dot" data-color="rose" style="background-color: #e11d48;" title="Rose"></button>
             </div>
           </div>
         </div>
 
-        <!-- Note Content -->
+        <!-- Content -->
         <div class="form-group">
           <label for="noteContentInput">Content</label>
-          <textarea id="noteContentInput" rows="6" placeholder="Write your thoughts, checklist, or details here..." required></textarea>
+          <textarea id="noteContentInput" rows="7" placeholder="Write your note here..." required></textarea>
         </div>
 
-        <!-- Pin toggle in modal -->
+        <!-- Pin option -->
         <div class="form-checkbox">
           <label class="checkbox-container">
             <input type="checkbox" id="notePinnedInput">
             <span class="custom-checkbox"></span>
-            <span class="checkbox-label">Pin this note to the top</span>
+            <span class="checkbox-label">Pin to top</span>
           </label>
         </div>
 
         <!-- Actions -->
         <div class="modal-actions">
           <button type="button" id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
-          <button type="submit" id="saveNoteBtn" class="btn btn-primary">Save Note</button>
+          <button type="submit" id="saveNoteBtn" class="btn btn-primary">Save</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
+  <!-- Delete Modal -->
   <div id="deleteModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-card modal-confirm">
       <div class="confirm-icon-danger">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"></polyline>
           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           <line x1="10" y1="11" x2="10" y2="17"></line>
           <line x1="14" y1="11" x2="14" y2="17"></line>
         </svg>
       </div>
-      <h3>Delete Note?</h3>
-      <p>Are you sure you want to permanently delete "<span id="deleteNoteTitlePreview" class="highlight-text"></span>"? This action cannot be undone.</p>
+      <h3>Delete this note?</h3>
+      <p>Are you sure you want to delete "<span id="deleteNoteTitlePreview" class="highlight-text"></span>"? This cannot be undone.</p>
       <div class="modal-actions">
-        <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Keep Note</button>
-        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+        <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
       </div>
     </div>
   </div>

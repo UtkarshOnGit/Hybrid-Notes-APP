@@ -1,6 +1,6 @@
 {
   "appId": "com.noteflow.hybridapp",
-  "appName": "NoteFlow",
+  "appName": "Notes",
   "webDir": "www",
   "server": {
     "androidScheme": "https"

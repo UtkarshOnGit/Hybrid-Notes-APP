@@ -1,54 +1,35 @@
 /**
- * NoteFlow - Modern Hybrid Mobile Notes App Logic
- * Features: Complete CRUD, LocalStorage Persistence, Search, Filtering, Dark Theme
+ * Personal Notes App
+ * Local persistence, full CRUD, search, category filtering, theme toggle.
  */
 
 (function () {
   'use strict';
 
-  // --- Constants & Storage Keys ---
-  const STORAGE_KEY_NOTES = 'noteflow_notes_v1';
-  const STORAGE_KEY_THEME = 'noteflow_theme_v1';
+  const STORAGE_KEY_NOTES = 'notes_app_data_v2';
+  const STORAGE_KEY_THEME = 'notes_app_theme_v2';
 
-  // Seed data for initial demo
+  // Single initial note as requested
   const INITIAL_SEED_NOTES = [
     {
-      id: 'demo-1',
-      title: '🚀 Welcome to NoteFlow!',
-      content: 'NoteFlow is a hybrid notes app built with modern web standards and packaged for Android using Capacitor.\n\n• Works completely offline with local storage.\n• Tap the pencil icon to edit this note.\n• Tap the pin to keep important notes on top.',
-      category: 'Work',
-      color: 'indigo',
-      pinned: true,
-      updatedAt: Date.now() - 1000 * 60 * 30 // 30 mins ago
-    },
-    {
-      id: 'demo-2',
-      title: '💡 Hybrid Mobile Development Checklist',
-      content: '1. Build responsive mobile-first UI with HTML/CSS/JS.\n2. Verify local state and persistent storage.\n3. Integrate Capacitor Android container.\n4. Build and test .apk on Android device.',
-      category: 'Study',
-      color: 'emerald',
-      pinned: false,
-      updatedAt: Date.now() - 1000 * 60 * 120 // 2 hours ago
-    },
-    {
-      id: 'demo-3',
-      title: '🛒 Weekend Groceries & Ideas',
-      content: 'Almond milk, avocados, dark roast coffee beans, sourdough bread, and fresh rosemary.',
+      id: 'welcome-note',
+      title: 'Hey you can create notes here',
+      content: 'Tap the plus button below to create a new note. You can edit, search, categorize, or delete notes anytime.',
       category: 'Personal',
-      color: 'amber',
+      color: 'slate',
       pinned: false,
-      updatedAt: Date.now() - 1000 * 60 * 60 * 24 // 1 day ago
+      updatedAt: Date.now()
     }
   ];
 
-  // --- State ---
+  // App State
   let notes = [];
   let selectedCategory = 'all';
   let searchQuery = '';
-  let activeColor = 'indigo';
+  let activeColor = 'slate';
   let pendingDeleteId = null;
 
-  // --- DOM Elements ---
+  // DOM Elements
   const notesContainer = document.getElementById('notesContainer');
   const emptyState = document.getElementById('emptyState');
   const emptyTitle = document.getElementById('emptyTitle');
@@ -61,7 +42,7 @@
   const addNoteFab = document.getElementById('addNoteFab');
   const emptyAddBtn = document.getElementById('emptyAddBtn');
 
-  // Modals
+  // Modal Elements
   const noteModal = document.getElementById('noteModal');
   const noteForm = document.getElementById('noteForm');
   const modalTitle = document.getElementById('modalTitle');
@@ -74,7 +55,7 @@
   const notePinnedInput = document.getElementById('notePinnedInput');
   const colorPicker = document.getElementById('colorPicker');
 
-  // Delete Modal
+  // Delete Modal Elements
   const deleteModal = document.getElementById('deleteModal');
   const deleteNoteTitlePreview = document.getElementById('deleteNoteTitlePreview');
   const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
@@ -83,7 +64,6 @@
   // Toast Container
   const toastContainer = document.getElementById('toastContainer');
 
-  // --- Initializer ---
   function init() {
     loadTheme();
     loadNotes();
@@ -91,7 +71,6 @@
     render();
   }
 
-  // --- Storage & Data Operations ---
   function loadNotes() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_NOTES);
@@ -99,31 +78,29 @@
         notes = JSON.parse(stored);
       } else {
         notes = INITIAL_SEED_NOTES;
-        saveNotesToStorage();
+        saveNotes();
       }
     } catch (err) {
-      console.error('Failed to load notes from localStorage:', err);
+      console.error(err);
       notes = INITIAL_SEED_NOTES;
     }
   }
 
-  function saveNotesToStorage() {
+  function saveNotes() {
     try {
       localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes));
     } catch (err) {
-      console.error('Failed to save notes to localStorage:', err);
-      showToast('⚠️ Storage limit reached or error saving.');
+      console.error(err);
+      showToast('Storage error');
     }
   }
 
-  // --- Theme Management ---
   function loadTheme() {
     const savedTheme = localStorage.getItem(STORAGE_KEY_THEME);
     if (savedTheme) {
       setTheme(savedTheme);
     } else {
-      // Respect system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       setTheme(prefersDark ? 'dark' : 'light');
     }
   }
@@ -135,12 +112,10 @@
 
   function toggleTheme() {
     const currentTheme = document.body.getAttribute('data-theme') || 'light';
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    showToast(`Switched to ${newTheme} theme`);
+    const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
   }
 
-  // --- Date Formatter ---
   function formatDate(timestamp) {
     if (!timestamp) return '';
     const date = new Date(timestamp);
@@ -148,64 +123,51 @@
     const isToday = date.toDateString() === now.toDateString();
 
     if (isToday) {
-      return 'Today, ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
   }
 
-  // --- Filter & Search Logic ---
   function getFilteredNotes() {
     return notes
       .filter((note) => {
-        // Category filter
-        const matchesCategory =
+        const matchesCat =
           selectedCategory === 'all' ||
-          note.category.toLowerCase() === selectedCategory.toLowerCase();
+          (note.category && note.category.toLowerCase() === selectedCategory.toLowerCase());
 
-        // Search filter
-        const query = searchQuery.trim().toLowerCase();
-        const matchesSearch =
-          !query ||
-          note.title.toLowerCase().includes(query) ||
-          note.content.toLowerCase().includes(query);
+        const q = searchQuery.trim().toLowerCase();
+        const matchesQuery =
+          !q ||
+          (note.title && note.title.toLowerCase().includes(q)) ||
+          (note.content && note.content.toLowerCase().includes(q));
 
-        return matchesCategory && matchesSearch;
+        return matchesCat && matchesQuery;
       })
       .sort((a, b) => {
-        // Pinned notes first
         if (a.pinned !== b.pinned) {
           return b.pinned ? 1 : -1;
         }
-        // Then by last modified date descending
         return (b.updatedAt || 0) - (a.updatedAt || 0);
       });
   }
 
-  // --- Render UI ---
   function render() {
     const filtered = getFilteredNotes();
 
-    // Update count text
-    const totalCount = notes.length;
-    const showingCount = filtered.length;
-    if (searchQuery || selectedCategory !== 'all') {
-      notesCountText.textContent = `Showing ${showingCount} of ${totalCount} notes`;
-    } else {
-      notesCountText.textContent = `${totalCount} ${totalCount === 1 ? 'note' : 'notes'} stored locally`;
-    }
+    const count = filtered.length;
+    notesCountText.textContent = `${count} ${count === 1 ? 'note' : 'notes'}`;
 
-    // Toggle Empty State vs Grid
     if (filtered.length === 0) {
       notesContainer.innerHTML = '';
       emptyState.classList.remove('hidden');
 
       if (searchQuery || selectedCategory !== 'all') {
-        emptyTitle.textContent = 'No matching notes found';
-        emptySubtitle.textContent = 'Try searching with different keywords or switch category filter.';
+        emptyTitle.textContent = 'No matching notes';
+        emptySubtitle.textContent = 'Try another search or filter.';
         emptyAddBtn.classList.add('hidden');
       } else {
-        emptyTitle.textContent = 'No notes yet';
-        emptySubtitle.textContent = 'Tap the + button below to create your very first note.';
+        emptyTitle.textContent = 'No notes';
+        emptySubtitle.textContent = 'Tap the button below to add your first note.';
         emptyAddBtn.classList.remove('hidden');
       }
       return;
@@ -216,10 +178,10 @@
 
     filtered.forEach((note) => {
       const card = document.createElement('article');
-      card.className = `note-card color-${note.color || 'indigo'} ${note.pinned ? 'pinned' : ''}`;
+      card.className = `note-card color-${note.color || 'slate'} ${note.pinned ? 'pinned' : ''}`;
       card.setAttribute('data-id', note.id);
 
-      // Card Header
+      // Header row
       const headerRow = document.createElement('div');
       headerRow.className = 'note-header-row';
 
@@ -232,10 +194,10 @@
 
       const pinBtn = document.createElement('button');
       pinBtn.className = `pin-btn ${note.pinned ? 'active' : ''}`;
-      pinBtn.title = note.pinned ? 'Unpin note' : 'Pin note';
-      pinBtn.setAttribute('aria-label', note.pinned ? 'Unpin note' : 'Pin note');
+      pinBtn.title = note.pinned ? 'Unpin' : 'Pin';
+      pinBtn.setAttribute('aria-label', note.pinned ? 'Unpin' : 'Pin');
       pinBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="${note.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="${note.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="17" x2="12" y2="22"></line>
           <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
         </svg>
@@ -249,23 +211,21 @@
       headerRow.appendChild(titleEl);
       headerRow.appendChild(topActions);
 
-      // Card Body
+      // Body text
       const bodyEl = document.createElement('div');
       bodyEl.className = 'note-body';
       bodyEl.textContent = note.content;
 
-      // Card Footer
+      // Footer
       const footerEl = document.createElement('div');
       footerEl.className = 'note-footer';
 
       const metaLeft = document.createElement('div');
-      metaLeft.style.display = 'flex';
-      metaLeft.style.alignItems = 'center';
-      metaLeft.style.gap = '8px';
+      metaLeft.className = 'note-meta-left';
 
       const catBadge = document.createElement('span');
       catBadge.className = 'category-badge';
-      catBadge.textContent = note.category || 'General';
+      catBadge.textContent = note.category || 'Personal';
 
       const dateSpan = document.createElement('span');
       dateSpan.textContent = formatDate(note.updatedAt);
@@ -273,16 +233,15 @@
       metaLeft.appendChild(catBadge);
       metaLeft.appendChild(dateSpan);
 
-      // Action Buttons (Edit & Delete)
       const actionsEl = document.createElement('div');
       actionsEl.className = 'note-card-actions';
 
       const editBtn = document.createElement('button');
       editBtn.className = 'card-action-btn';
-      editBtn.title = 'Edit Note';
-      editBtn.setAttribute('aria-label', 'Edit note');
+      editBtn.title = 'Edit';
+      editBtn.setAttribute('aria-label', 'Edit');
       editBtn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 20h9"></path>
           <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
         </svg>
@@ -294,10 +253,10 @@
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'card-action-btn delete-btn';
-      deleteBtn.title = 'Delete Note';
-      deleteBtn.setAttribute('aria-label', 'Delete note');
+      deleteBtn.title = 'Delete';
+      deleteBtn.setAttribute('aria-label', 'Delete');
       deleteBtn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"></polyline>
           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
         </svg>
@@ -313,7 +272,6 @@
       footerEl.appendChild(metaLeft);
       footerEl.appendChild(actionsEl);
 
-      // Card Click: also opens editor
       card.addEventListener('click', () => {
         openEditModal(note.id);
       });
@@ -326,16 +284,15 @@
     });
   }
 
-  // --- CRUD Actions ---
-
+  // Actions
   function openCreateModal() {
     noteForm.reset();
     noteIdInput.value = '';
-    modalTitle.textContent = 'Create Note';
-    setActiveColor('indigo');
+    modalTitle.textContent = 'New Note';
+    setActiveColor('slate');
     notePinnedInput.checked = false;
     noteModal.classList.remove('hidden');
-    setTimeout(() => noteTitleInput.focus(), 150);
+    setTimeout(() => noteTitleInput.focus(), 120);
   }
 
   function openEditModal(id) {
@@ -347,11 +304,11 @@
     noteContentInput.value = note.content;
     noteCategorySelect.value = note.category || 'Personal';
     notePinnedInput.checked = !!note.pinned;
-    setActiveColor(note.color || 'indigo');
+    setActiveColor(note.color || 'slate');
 
     modalTitle.textContent = 'Edit Note';
     noteModal.classList.remove('hidden');
-    setTimeout(() => noteTitleInput.focus(), 150);
+    setTimeout(() => noteTitleInput.focus(), 120);
   }
 
   function closeNoteModal() {
@@ -370,13 +327,11 @@
     const existingId = noteIdInput.value;
 
     if (!title) {
-      showToast('Please enter a note title.');
       noteTitleInput.focus();
       return;
     }
 
     if (existingId) {
-      // UPDATE Note
       const index = notes.findIndex((n) => n.id === existingId);
       if (index !== -1) {
         notes[index] = {
@@ -388,12 +343,11 @@
           color,
           updatedAt: Date.now()
         };
-        showToast('✓ Note updated successfully');
+        showToast('Note updated');
       }
     } else {
-      // CREATE Note
       const newNote = {
-        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
         title,
         content,
         category,
@@ -403,10 +357,10 @@
         updatedAt: Date.now()
       };
       notes.unshift(newNote);
-      showToast('✓ Note created successfully');
+      showToast('Note saved');
     }
 
-    saveNotesToStorage();
+    saveNotes();
     closeNoteModal();
     render();
   }
@@ -417,9 +371,9 @@
 
     note.pinned = !note.pinned;
     note.updatedAt = Date.now();
-    saveNotesToStorage();
+    saveNotes();
     render();
-    showToast(note.pinned ? '📌 Note pinned to top' : 'Note unpinned');
+    showToast(note.pinned ? 'Note pinned' : 'Note unpinned');
   }
 
   function openDeleteModal(id) {
@@ -439,12 +393,11 @@
   function handleConfirmDelete() {
     if (!pendingDeleteId) return;
 
-    // DELETE Note
     notes = notes.filter((n) => n.id !== pendingDeleteId);
-    saveNotesToStorage();
+    saveNotes();
     closeDeleteModal();
     render();
-    showToast('🗑️ Note deleted');
+    showToast('Note deleted');
   }
 
   function setActiveColor(color) {
@@ -459,7 +412,6 @@
     });
   }
 
-  // --- Toast System ---
   function showToast(message) {
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -470,36 +422,29 @@
       if (toast.parentNode) {
         toast.parentNode.removeChild(toast);
       }
-    }, 3000);
+    }, 2200);
   }
 
-  // --- Event Listeners ---
   function attachEventListeners() {
-    // Theme toggle
     themeToggleBtn.addEventListener('click', toggleTheme);
 
-    // FAB & Empty State Add
     addNoteFab.addEventListener('click', openCreateModal);
     emptyAddBtn.addEventListener('click', openCreateModal);
 
-    // Modal Form & Close
     noteForm.addEventListener('submit', handleSaveNote);
     closeModalBtn.addEventListener('click', closeNoteModal);
     cancelModalBtn.addEventListener('click', closeNoteModal);
 
-    // Close on backdrop click
     noteModal.addEventListener('click', (e) => {
       if (e.target === noteModal) closeNoteModal();
     });
 
-    // Delete Modal
     cancelDeleteBtn.addEventListener('click', closeDeleteModal);
     confirmDeleteBtn.addEventListener('click', handleConfirmDelete);
     deleteModal.addEventListener('click', (e) => {
       if (e.target === deleteModal) closeDeleteModal();
     });
 
-    // Keyboard Shortcuts (Esc to close modal)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         if (!noteModal.classList.contains('hidden')) closeNoteModal();
@@ -507,7 +452,6 @@
       }
     });
 
-    // Color picker
     colorPicker.addEventListener('click', (e) => {
       const dot = e.target.closest('.color-dot');
       if (dot) {
@@ -516,7 +460,6 @@
       }
     });
 
-    // Search input
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value;
       if (searchQuery.trim().length > 0) {
@@ -535,7 +478,6 @@
       render();
     });
 
-    // Category chips
     categoryChips.addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
       if (!chip) return;
@@ -548,7 +490,6 @@
     });
   }
 
-  // Start app
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
