@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Android build outputs & local machine config
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/*.iml
+android/app/*.iml
+
+# macOS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+
+# Allow the submission APK
+!apk/
+!apk/*.apk

@@ -1,0 +1,8 @@
+{
+  "appId": "com.noteflow.hybridapp",
+  "appName": "NoteFlow",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
